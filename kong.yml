@@ -1,0 +1,9 @@
+_format_version: "2.1"
+
+services:
+  - name: agent_server
+    url: http://agent_server:5000
+    routes:
+      - name: agent_service
+        paths:
+          - /agent_backend
