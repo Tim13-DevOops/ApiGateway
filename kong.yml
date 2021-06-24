@@ -7,3 +7,9 @@ services:
       - name: agent_service
         paths:
           - /agent_backend
+  - name: authentication_server
+    url: http://authentication_server:5000
+    routes:
+      - name: authentication_service
+        paths:
+          - /authentication
