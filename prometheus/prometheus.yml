@@ -33,6 +33,11 @@ scrape_configs:
     metrics_path: '/user_profile/metrics' 
     static_configs:
       - targets: ['kong:8000']
+      
+  - job_name: 'post-service'
+    metrics_path: '/post/metrics' 
+    static_configs:
+      - targets: ['kong:8000']
 
   - job_name: 'node_exporter'
     static_configs:
