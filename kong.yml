@@ -53,6 +53,19 @@ services:
         paths:
           - /post
 
+  - name: post_comment_metrics
+    url: http://post_comment_service:5000/metrics
+    routes:
+      - name: post_comment_metrics
+        paths:
+          - /post_comment/metrics
+  - name: post_comment_service
+    url: http://post_comment_service:5000
+    routes:
+      - name: post_comment_service
+        paths:
+          - /post_comment
+
 
 
 plugins:
@@ -89,6 +102,17 @@ plugins:
 
 - name: request-transformer
   route: post_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: post_comment_metrics
   config: 
     add:
       headers:
