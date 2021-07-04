@@ -38,6 +38,11 @@ scrape_configs:
     metrics_path: '/post/metrics' 
     static_configs:
       - targets: ['kong:8000']
+      
+  - job_name: 'post-comment-service'
+    metrics_path: '/post_comment/metrics' 
+    static_configs:
+      - targets: ['kong:8000']
 
   - job_name: 'node_exporter'
     static_configs:
