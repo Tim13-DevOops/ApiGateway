@@ -13,3 +13,9 @@ services:
       - name: authentication_service
         paths:
           - /authentication
+  - name: image_service
+    url: http://image_service:5000
+    routes:
+      - name: image_service
+        paths:
+          - /image_service
