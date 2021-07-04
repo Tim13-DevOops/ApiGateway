@@ -34,6 +34,12 @@ scrape_configs:
     static_configs:
       - targets: ['kong:8000']
 
+  - job_name: 'image-service'
+    metrics_path: '/image_service/metrics' 
+    static_configs:
+      - targets: ['kong:8000']
+
+
   - job_name: 'node_exporter'
     static_configs:
       - targets: ['node-exporter:9100']

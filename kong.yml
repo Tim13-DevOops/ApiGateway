@@ -20,6 +20,14 @@ services:
       - name: authentication_service
         paths:
           - /authentication
+
+  - name: image_service_metrics
+    url: http://image_service:5000/metrics
+    routes:
+      - name: image_service_metrics
+        paths:
+          - /image_service/metrics
+
   - name: image_service
     url: http://image_service:5000
     routes:
@@ -65,6 +73,17 @@ plugins:
 
 - name: request-transformer
   route: user_profile_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: image_service_metrics
   config: 
     add:
       headers:
