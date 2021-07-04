@@ -1,6 +1,13 @@
 _format_version: "2.1"
 
 services:
+  - name: agent_server_metrics
+    url: http://agent_server:5000/metrics
+    routes:
+      - name: agent_service_metrics
+        paths:
+          - /agent_backend/metrics
+
   - name: agent_server
     url: http://agent_server:5000
     routes:
@@ -19,3 +26,24 @@ services:
       - name: image_service
         paths:
           - /image_service
+
+plugins:
+- name: prometheus
+  service: agent_server
+  enabled: true
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+
+- name: request-transformer
+  route: agent_service_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
