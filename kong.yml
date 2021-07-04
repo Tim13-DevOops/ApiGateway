@@ -7,13 +7,13 @@ services:
       - name: agent_service_metrics
         paths:
           - /agent_backend/metrics
-
   - name: agent_server
     url: http://agent_server:5000
     routes:
       - name: agent_service
         paths:
           - /agent_backend
+
   - name: authentication_server
     url: http://authentication_server:5000
     routes:
@@ -27,6 +27,21 @@ services:
         paths:
           - /image_service
 
+  - name: user_profile_metrics
+    url: http://user_profile_service:5000/metrics
+    routes:
+      - name: user_profile_metrics
+        paths:
+          - /user_profile/metrics
+  - name: user_profile_service
+    url: http://user_profile_service:5000
+    routes:
+      - name: user_profile_service
+        paths:
+          - /user_profile
+
+
+
 plugins:
 - name: prometheus
   service: agent_server
@@ -39,6 +54,17 @@ plugins:
 
 - name: request-transformer
   route: agent_service_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: user_profile_metrics
   config: 
     add:
       headers:
