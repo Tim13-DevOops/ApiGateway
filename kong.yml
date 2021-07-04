@@ -40,6 +40,19 @@ services:
         paths:
           - /user_profile
 
+  - name: post_metrics
+    url: http://post_service:5000/metrics
+    routes:
+      - name: post_metrics
+        paths:
+          - /post/metrics
+  - name: post_service
+    url: http://post_service:5000
+    routes:
+      - name: post_service
+        paths:
+          - /post
+
 
 
 plugins:
@@ -65,6 +78,17 @@ plugins:
 
 - name: request-transformer
   route: user_profile_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: post_metrics
   config: 
     add:
       headers:
