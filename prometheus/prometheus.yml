@@ -29,6 +29,11 @@ scrape_configs:
     static_configs:
       - targets: ['kong:8000']
 
+  - job_name: 'authentication-service'
+    metrics_path: '/authentication/metrics' 
+    static_configs:
+      - targets: ['kong:8000']
+
   - job_name: 'user-profile-service'
     metrics_path: '/user_profile/metrics' 
     static_configs:
