@@ -14,6 +14,13 @@ services:
         paths:
           - /agent_backend
 
+  - name: authentication_server_metrics
+    url: http://authentication_server:5000/metrics
+    routes:
+      - name: authentication_server_metrics
+        paths:
+          - /authentication/metrics
+
   - name: authentication_server
     url: http://authentication_server:5000
     routes:
@@ -87,6 +94,16 @@ plugins:
 
 - name: request-transformer
   route: agent_service_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+  route: authentication_server_metrics
   config: 
     add:
       headers:
