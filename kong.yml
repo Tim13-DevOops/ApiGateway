@@ -81,6 +81,20 @@ services:
         paths:
           - /post_comment
 
+  - name: campaign_metrics
+    url: http://campaign_service:5000/metrics
+    routes:
+      - name: campaign__metrics
+        paths:
+          - /campaign/metrics
+  - name: campaign_service
+    url: http://campaign_service:5000
+    routes:
+      - name: campaign_service
+        paths:
+          - /campaign
+
+
 
 
 plugins:
@@ -156,3 +170,15 @@ plugins:
     replace:
       headers:
       - "Accept:application/octet-stream"
+      
+- name: request-transformer
+  route: post_comment_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
