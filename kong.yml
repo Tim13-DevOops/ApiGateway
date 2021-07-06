@@ -78,7 +78,6 @@ services:
 
 plugins:
 - name: prometheus
-  service: agent_server
   enabled: true
   protocols:
   - grpc
