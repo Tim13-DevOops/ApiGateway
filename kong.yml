@@ -15,6 +15,13 @@ services:
         paths:
           - /agent_backend
 
+  - name: authentication_server_metrics
+    url: http://authentication_server:5000/metrics
+    routes:
+      - name: authentication_server_metrics
+        paths:
+          - /authentication/metrics
+
   - name: authentication_server
     url: http://authentication_server:5000
     routes:
@@ -22,9 +29,63 @@ services:
         paths:
           - /authentication
 
+  - name: image_service_metrics
+    url: http://image_service:5000/metrics
+    routes:
+      - name: image_service_metrics
+        paths:
+          - /image_service/metrics
+
+  - name: image_service
+    url: http://image_service:5000
+    routes:
+      - name: image_service
+        paths:
+          - /image_service
+
+  - name: user_profile_metrics
+    url: http://user_profile_service:5000/metrics
+    routes:
+      - name: user_profile_metrics
+        paths:
+          - /user_profile/metrics
+  - name: user_profile_service
+    url: http://user_profile_service:5000
+    routes:
+      - name: user_profile_service
+        paths:
+          - /user_profile
+
+  - name: post_metrics
+    url: http://post_service:5000/metrics
+    routes:
+      - name: post_metrics
+        paths:
+          - /post/metrics
+  - name: post_service
+    url: http://post_service:5000
+    routes:
+      - name: post_service
+        paths:
+          - /post
+
+  - name: post_comment_metrics
+    url: http://post_comment_service:5000/metrics
+    routes:
+      - name: post_comment_metrics
+        paths:
+          - /post_comment/metrics
+  - name: post_comment_service
+    url: http://post_comment_service:5000
+    routes:
+      - name: post_comment_service
+        paths:
+          - /post_comment
+
+
+
 plugins:
 - name: prometheus
-  service: agent_server
   enabled: true
   protocols:
   - grpc
@@ -34,6 +95,61 @@ plugins:
 
 - name: request-transformer
   route: agent_service_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: authentication_server_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: user_profile_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: post_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: image_service_metrics
+  config: 
+    add:
+      headers:
+      - "Accept:application/octet-stream"
+
+    replace:
+      headers:
+      - "Accept:application/octet-stream"
+
+- name: request-transformer
+  route: post_comment_metrics
   config: 
     add:
       headers:
