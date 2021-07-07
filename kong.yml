@@ -7,6 +7,7 @@ services:
       - name: agent_service_metrics
         paths:
           - /agent_backend/metrics
+
   - name: agent_server
     url: http://agent_server:5000
     routes:
@@ -103,6 +104,7 @@ plugins:
       headers:
       - "Accept:application/octet-stream"
 
+- name: request-transformer
   route: authentication_server_metrics
   config: 
     add:
