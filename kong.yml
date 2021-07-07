@@ -85,7 +85,7 @@ services:
   - name: campaign_metrics
     url: http://campaign_service:5000/metrics
     routes:
-      - name: campaign__metrics
+      - name: campaign_metrics
         paths:
           - /campaign/metrics
   - name: campaign_service
@@ -174,7 +174,7 @@ plugins:
       - "Accept:application/octet-stream"
       
 - name: request-transformer
-  route: post_comment_metrics
+  route: campaign_metrics
   config: 
     add:
       headers:

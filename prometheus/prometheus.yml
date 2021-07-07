@@ -55,7 +55,7 @@ scrape_configs:
       - targets: ['kong:8000']
 
   - job_name: 'campaign-service'
-    metrics_path: '/campaign_service/metrics' 
+    metrics_path: '/campaign/metrics' 
     static_configs:
       - targets: ['kong:8000']
 
