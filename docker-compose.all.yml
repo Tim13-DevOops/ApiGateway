@@ -1,0 +1,245 @@
+version: "3.8"
+networks:
+    system_network:
+services:
+  kong:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/kong.yml
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "127.0.0.1:8001:8001"
+      - "127.0.0.1:8444:8444"
+    hostname:
+      api_gateway
+    networks:
+      - system_network
+
+  db:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    volumes:
+      - agent-postgres-data:/var/lib/postgresql/data
+    env_file:
+      - ./compose_all/agent_backend/.env
+    hostname:
+      db
+    networks:
+      - system_network
+
+  server:
+    image: dusanpanda/agent_backend:production
+    env_file:
+      - ./compose_all/agent_backend/.env
+    depends_on:
+      - db
+    hostname:
+      agent_server
+    networks:
+      - system_network
+
+  authentication_db:
+    image: postgres:latest
+    container_name: authentication_postgres
+    restart: always
+    volumes:
+      - authentication-postgres-data:/var/lib/postgresql/data
+    env_file:
+      - ./compose_all/authentication_service/.env
+    hostname:
+      authentication_db
+    networks:
+      - system_network
+
+  authentication_server:
+    image: dusanpanda/authentication_service:production
+    env_file:
+      - ./compose_all/authentication_service/.env
+    depends_on:
+      - authentication_db
+    hostname:
+      authentication_server
+    networks:
+      - system_network
+
+  image_server:
+    image: dusanpanda/image_service:production
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./compose_all/image_service/.env
+    hostname:
+      image_service
+    networks:
+      - system_network
+
+  post_comment_db:
+    image: postgres:latest
+    container_name: post_comment_postgres
+    volumes:
+      - post-comment-postgres-data:/var/lib/postgresql/data
+    restart: always
+    env_file:
+      - ./compose_all/post_comment_service/.env
+    hostname:
+      post_comment_db 
+    networks:
+      - system_network
+
+  post_comment_service:
+    image: dusanpanda/post_comment_service:production
+    env_file:
+      - ./compose_all/post_comment_service/.env
+    depends_on:
+      - post_comment_db
+    hostname:
+      post_comment_service 
+    networks:
+      - system_network
+
+  post_db:
+    image: postgres:latest
+    container_name: post_postgres
+    volumes:
+      - post-postgres-data:/var/lib/postgresql/data
+    restart: always
+    env_file:
+      - ./compose_all/post_service/.env
+    hostname:
+      post_db 
+    networks:
+      - system_network
+
+  post_service:
+    image: dusanpanda/post_service:production
+    env_file:
+      - ./compose_all/post_service/.env
+    depends_on:
+      - post_db
+    hostname:
+      post_service 
+    networks:
+      - system_network
+
+  user_profile_db: 
+    image: postgres:latest
+    container_name: user_profile_postgres 
+    volumes:
+      - user-profile-postgres-data:/var/lib/postgresql/data
+    restart: always
+    env_file:
+      - ./compose_all/user_profile_service/.env
+    hostname:
+      user_profile_db 
+    networks:
+      - system_network
+
+  user_profile_service: 
+    image: dusanpanda/user_profile_backend:production
+    env_file:
+      - ./compose_all/user_profile_service/.env
+    depends_on:
+      - user_profile_db 
+    hostname:
+      user_profile_service 
+    networks:
+      - system_network
+
+  campaign_service_db: 
+    image: postgres:latest
+    container_name: campaign_service_postgres 
+    volumes:
+      - campaign-postgres-data:/var/lib/postgresql/data
+    restart: always
+    env_file:
+      - ./compose_all/campaign_service/.env
+    hostname:
+      campaign_service_db
+    networks:
+      - system_network
+
+
+  campaign_service: 
+    image: dusanpanda/campaign_service:production
+    env_file:
+      - ./compose_all/campaign_service/.env
+    depends_on:
+      - campaign_service_db 
+    hostname:
+      campaign_service
+    networks:
+      - system_network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: on-failure
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - system_network
+
+  grafana:
+    image: grafana/grafana:7.5.2
+    container_name: grafana
+    restart: on-failure
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    ports:
+      - 3000:3000
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning
+      - grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - system_network
+
+  node-exporter:
+    image: prom/node-exporter:v1.1.2
+    container_name: node-exporter
+    ports:
+      - 9100:9100
+    networks:
+      - system_network
+
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    networks:
+      - system_network
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+
+
+volumes:
+  grafana:
+  prometheus:
+  agent-postgres-data:
+  authentication-postgres-data:
+  post-comment-postgres-data:
+  post-postgres-data:
+  user-profile-postgres-data:
+  campaign-postgres-data:
